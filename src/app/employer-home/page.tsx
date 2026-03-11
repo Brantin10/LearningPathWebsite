@@ -151,7 +151,7 @@ export default function EmployerHomePage() {
           onClick={() => router.push('/guide')}
           className="w-full flex items-center bg-primary-muted border border-[rgba(39,174,96,0.4)] rounded-2xl py-4 px-5 mb-5 hover:bg-[rgba(39,174,96,0.25)] transition-colors"
         >
-          <HelpCircle size={20} className="text-primary mr-3" />
+          <HelpCircle size={24} className="text-primary mr-3" />
           <span className="flex-1 text-[15px] font-semibold text-primary text-left">How to Get Started</span>
           <span className="text-primary text-lg">&rarr;</span>
         </button>
@@ -161,37 +161,37 @@ export default function EmployerHomePage() {
           <ActionCard
             title="Browse Candidates"
             description="Discover talent matching your needs"
-            icon={<Search size={22} />}
+            icon={<Search size={24} />}
             onPress={() => router.push('/employer-browse')}
           />
           <ActionCard
             title="Saved Candidates"
             description="View your bookmarked talent"
-            icon={<Bookmark size={22} />}
+            icon={<Bookmark size={24} />}
             onPress={() => router.push('/employer-saved')}
           />
           <ActionCard
             title="Inbox"
             description="Messages and contact requests"
-            icon={<Inbox size={22} />}
+            icon={<Inbox size={24} />}
             onPress={() => router.push('/inbox')}
           />
           <ActionCard
             title="My Profile"
             description="Edit your company information"
-            icon={<User size={22} />}
+            icon={<User size={24} />}
             onPress={() => router.push('/profile-setup')}
           />
           <ActionCard
             title="Community"
             description="Engage with career changers"
-            icon={<Users size={22} />}
+            icon={<Users size={24} />}
             onPress={() => router.push('/community')}
           />
           <ActionCard
             title="Settings"
             description="Account and preferences"
-            icon={<Settings size={22} />}
+            icon={<Settings size={24} />}
             onPress={() => router.push('/settings')}
           />
         </div>
@@ -201,7 +201,7 @@ export default function EmployerHomePage() {
           onClick={handleLogout}
           className="mx-auto flex items-center gap-2 mt-8 px-6 py-3 rounded-2xl bg-error-muted border border-[rgba(255,107,107,0.4)] text-error font-semibold hover:bg-[rgba(255,107,107,0.25)] transition-colors"
         >
-          <LogOut size={18} />
+          <LogOut size={24} />
           Log Out
         </button>
       </main>

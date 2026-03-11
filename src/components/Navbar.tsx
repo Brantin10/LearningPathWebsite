@@ -62,7 +62,7 @@ export default function Navbar() {
                   ${active ? 'bg-primary-muted text-primary' : 'text-text-secondary hover:text-text-primary hover:bg-bg-card'}
                 `}
               >
-                <Icon size={18} />
+                <Icon size={24} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -71,7 +71,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-bg-card text-text-secondary transition-colors">
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            {isDark ? <Sun size={24} /> : <Moon size={24} />}
           </button>
           {profile && (
             <Link href="/profile-setup">
@@ -79,7 +79,7 @@ export default function Navbar() {
             </Link>
           )}
           <button onClick={() => logOut()} className="p-2 rounded-lg hover:bg-bg-card text-text-secondary transition-colors">
-            <LogOut size={18} />
+            <LogOut size={24} />
           </button>
         </div>
       </nav>
@@ -109,21 +109,21 @@ export default function Navbar() {
                     ${active ? 'bg-primary-muted text-primary' : 'text-text-secondary hover:text-text-primary'}
                   `}
                 >
-                  <Icon size={20} />
+                  <Icon size={24} />
                   <span>{item.label}</span>
                 </Link>
               );
             })}
             <hr className="border-border my-2" />
             <button onClick={toggleTheme} className="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary">
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              {isDark ? <Sun size={24} /> : <Moon size={24} />}
               <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
             <button
               onClick={() => { logOut(); setMenuOpen(false); }}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-error"
             >
-              <LogOut size={20} />
+              <LogOut size={24} />
               <span>Log Out</span>
             </button>
           </div>
