@@ -36,16 +36,9 @@ export async function signUp(
     visibleToEmployers: false,
   };
 
-  // Write user profile to Firestore — don't block signup if this fails or hangs
-  // (e.g. due to Firestore rules). Profile will be created/retried later.
-  try {
-    await Promise.race([
-      setDoc(doc(db, 'users', user.uid), newUser),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore write timeout')), 5000)),
-    ]);
-  } catch (firestoreErr) {
-    console.warn('[signUp] Firestore profile write failed or timed out:', firestoreErr);
-  }
+  // Write user profile to Firestore — signup must complete this step.
+  // If this fails, the error propagates to the UI so the user knows.
+  await setDoc(doc(db, 'users', user.uid), newUser);
 
   return user;
 }
