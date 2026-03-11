@@ -11,17 +11,19 @@ import AnimatedPage from '@/components/AnimatedPage';
 export default function SplashPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const { profile } = useUser();
+  const { profile, loading: profileLoading } = useUser();
 
   useEffect(() => {
-    if (!loading && user && profile) {
-      if (profile.role === 'employer') {
-        router.replace('/employer-home');
-      } else {
+    if (!loading && user) {
+      if (profile) {
+        // Profile loaded — route based on role
+        router.replace(profile.role === 'employer' ? '/employer-home' : '/home');
+      } else if (!profileLoading) {
+        // Profile couldn't be loaded (Firestore not connected, etc.) — go to home as fallback
         router.replace('/home');
       }
     }
-  }, [user, loading, profile, router]);
+  }, [user, loading, profile, profileLoading, router]);
 
   // If user is logged in and we're waiting for profile to redirect, show a branded loader
   if (user && !loading) {

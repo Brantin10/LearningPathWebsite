@@ -36,7 +36,14 @@ export async function signUp(
     visibleToEmployers: false,
   };
 
-  await setDoc(doc(db, 'users', user.uid), newUser);
+  // Write user profile to Firestore — don't block signup if this fails
+  // (e.g. due to Firestore rules). Profile will be created/retried later.
+  try {
+    await setDoc(doc(db, 'users', user.uid), newUser);
+  } catch (firestoreErr) {
+    console.warn('[signUp] Firestore profile write failed:', firestoreErr);
+  }
+
   return user;
 }
 
