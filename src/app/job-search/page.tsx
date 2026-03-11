@@ -107,9 +107,9 @@ export default function JobSearchPage() {
               onClick={() => setShowFilters((prev) => !prev)}
               className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors px-3 py-2 glass-card rounded-xl"
             >
-              <Filter size={16} />
+              <Filter size={24} />
               <span>Filters</span>
-              {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {showFilters ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
             </button>
 
             <AnimatePresence>

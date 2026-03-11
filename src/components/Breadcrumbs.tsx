@@ -69,12 +69,12 @@ export default function Breadcrumbs() {
         href="/home"
         className="text-xs text-text-muted hover:text-text-secondary transition-colors"
       >
-        <Home size={14} />
+        <Home size={24} />
       </Link>
 
       {parent && (
         <>
-          <ChevronRight size={12} className="text-text-muted" />
+          <ChevronRight size={24} className="text-text-muted" />
           <Link
             href={parent.path}
             className="text-xs text-text-muted hover:text-text-secondary transition-colors"
@@ -84,7 +84,7 @@ export default function Breadcrumbs() {
         </>
       )}
 
-      <ChevronRight size={12} className="text-text-muted" />
+      <ChevronRight size={24} className="text-text-muted" />
       <span className="text-xs text-text-secondary">{currentName}</span>
     </nav>
   );

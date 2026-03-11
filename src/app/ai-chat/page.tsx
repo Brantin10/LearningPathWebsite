@@ -198,7 +198,7 @@ export default function AIChatPage() {
             onClick={handleClear}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-error hover:bg-error-muted transition-colors"
           >
-            <Trash2 size={14} />
+            <Trash2 size={24} />
             Clear
           </button>
         )}
@@ -304,7 +304,7 @@ export default function AIChatPage() {
                 : 'bg-bg-card text-text-muted'
             }`}
           >
-            <Send size={18} />
+            <Send size={24} />
           </button>
         </div>
       </div>

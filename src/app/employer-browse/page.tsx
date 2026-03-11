@@ -108,7 +108,7 @@ export default function EmployerBrowsePage() {
 
         {/* Search Input */}
         <div className="relative mb-4">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+          <Search size={24} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
             type="text"
             value={searchQuery}
@@ -194,7 +194,7 @@ export default function EmployerBrowsePage() {
                         </div>
                       )}
                     </div>
-                    <ChevronRight size={20} className="text-text-muted flex-shrink-0" />
+                    <ChevronRight size={24} className="text-text-muted flex-shrink-0" />
                   </button>
                 </StaggerItem>
               );

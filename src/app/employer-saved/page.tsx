@@ -154,7 +154,7 @@ export default function EmployerSavedPage() {
                     className="p-2 rounded-xl text-text-muted hover:text-error hover:bg-error-muted transition-colors flex-shrink-0"
                     title="Remove from saved"
                   >
-                    <X size={18} />
+                    <X size={24} />
                   </button>
                 </div>
               );

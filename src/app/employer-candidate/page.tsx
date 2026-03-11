@@ -307,7 +307,7 @@ function EmployerCandidateContent() {
             onClick={handleSaveNote}
             className="mt-3 flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-muted text-primary text-sm font-semibold hover:bg-[rgba(39,174,96,0.25)] transition-colors border border-[rgba(39,174,96,0.3)]"
           >
-            <Save size={16} />
+            <Save size={24} />
             Save Note
           </button>
         </Card>
@@ -322,7 +322,7 @@ function EmployerCandidateContent() {
                 : 'bg-primary-muted text-primary border-[rgba(39,174,96,0.4)] hover:bg-[rgba(39,174,96,0.25)]'
             }`}
           >
-            {saved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+            {saved ? <BookmarkCheck size={24} /> : <Bookmark size={24} />}
             {saved ? 'Saved' : 'Save Candidate'}
           </button>
           <button
@@ -334,7 +334,7 @@ function EmployerCandidateContent() {
                 : 'bg-primary text-white hover:bg-primary-dark'
             }`}
           >
-            <Send size={18} />
+            <Send size={24} />
             {alreadyRequested ? 'Request Sent' : sendingRequest ? 'Sending...' : 'Send Contact Request'}
           </button>
         </div>

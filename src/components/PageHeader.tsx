@@ -20,7 +20,7 @@ export default function PageHeader({ title, subtitle, showBack = true }: Props) 
           onClick={() => router.back()}
           className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-4"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
           <span className="text-sm">Back</span>
         </button>
       )}

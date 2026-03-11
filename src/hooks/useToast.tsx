@@ -47,14 +47,14 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number)
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       className={`glass-card-elevated rounded-xl px-4 py-3 flex items-center gap-3 min-w-[280px] max-w-[400px] border-l-4 ${TOAST_COLORS[toast.type]} shadow-lg shadow-black/20`}
     >
-      <Icon size={18} className="shrink-0" />
+      <Icon size={24} className="shrink-0" />
       <p className="text-sm text-text-primary flex-1">{toast.message}</p>
       <button
         onClick={() => onDismiss(toast.id)}
         className="text-text-muted hover:text-text-secondary transition-colors shrink-0"
         aria-label="Dismiss"
       >
-        <X size={14} />
+        <X size={24} />
       </button>
     </motion.div>
   );

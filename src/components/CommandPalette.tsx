@@ -130,7 +130,7 @@ export default function CommandPalette() {
           >
             {/* Search input */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-              <Search size={18} className="text-text-muted shrink-0" />
+              <Search size={24} className="text-text-muted shrink-0" />
               <input
                 ref={inputRef}
                 value={query}
@@ -193,7 +193,7 @@ export default function CommandPalette() {
                 <span>ESC Close</span>
               </div>
               <div className="flex items-center gap-1">
-                <Command size={10} />
+                <Command size={24} />
                 <span>K to toggle</span>
               </div>
             </div>
