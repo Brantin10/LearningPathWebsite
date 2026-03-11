@@ -4,10 +4,14 @@ import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import { getMessages, sendMessage, getConversations } from '@/services/firestore';
 import { DirectMessage, Conversation } from '@/types';
 import Navbar from '@/components/Navbar';
 import Avatar from '@/components/Avatar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -20,6 +24,7 @@ function ConversationContent() {
   const conversationId = searchParams.get('conversationId') || '';
   const { user } = useAuth();
   const { profile } = useUser();
+  const toast = useToast();
 
   const [messages, setMessages] = useState<DirectMessage[]>([]);
   const [conversation, setConversation] = useState<Conversation | null>(null);
@@ -81,7 +86,7 @@ function ConversationContent() {
       setMessages((prev) => [...prev, { id: msgId, ...msg }]);
       setText('');
     } catch (err) {
-      window.alert('Failed to send message.');
+      toast.error('Failed to send message.');
     } finally {
       setSending(false);
     }
@@ -96,6 +101,8 @@ function ConversationContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex flex-col">
+      <AnimatedPage>
+      <Breadcrumbs />
       {/* Header */}
       <div className="glass-card border-b border-border px-5 py-3 flex items-center gap-3 shrink-0">
         <button
@@ -115,13 +122,7 @@ function ConversationContent() {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-5 py-4">
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="flex gap-1">
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-            </div>
-          </div>
+          <PageSkeleton />
         ) : messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-text-muted text-sm">No messages yet. Say hello!</p>
@@ -185,6 +186,7 @@ function ConversationContent() {
           </button>
         </div>
       </div>
+      </AnimatedPage>
     </div>
   );
 }

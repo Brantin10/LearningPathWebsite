@@ -5,9 +5,15 @@ import React from 'react';
 interface Props {
   children: React.ReactNode;
   className?: string;
-  variant?: 'default' | 'elevated';
+  variant?: 'default' | 'elevated' | 'interactive';
   onClick?: () => void;
 }
+
+const variantClass: Record<string, string> = {
+  default: 'glass-card',
+  elevated: 'glass-card-elevated',
+  interactive: 'glass-card-interactive',
+};
 
 export default function Card({ children, className = '', variant = 'default', onClick }: Props) {
   return (
@@ -15,7 +21,7 @@ export default function Card({ children, className = '', variant = 'default', on
       onClick={onClick}
       className={`
         rounded-2xl p-5
-        ${variant === 'elevated' ? 'glass-card-elevated' : 'glass-card'}
+        ${variantClass[variant]}
         ${onClick ? 'cursor-pointer hover:bg-bg-card-hover transition-colors' : ''}
         ${className}
       `}

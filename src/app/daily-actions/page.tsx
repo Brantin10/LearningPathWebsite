@@ -7,6 +7,8 @@ import { useUser } from '@/hooks/useUser';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import ProgressBar from '@/components/ProgressBar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
 import {
   getDailyActionsPrefs,
   saveDailyActionsPrefs,
@@ -106,12 +108,12 @@ export default function DailyActionsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Daily Actions" subtitle="Loading..." />
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Daily Actions" subtitle="Loading..." />
+            <PageSkeleton />
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -132,8 +134,9 @@ export default function DailyActionsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Daily Actions" subtitle="Your personalized daily to-dos" />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Daily Actions" subtitle="Your personalized daily to-dos" />
 
         {/* Progress Card */}
         <div className="glass-card rounded-2xl p-5 mb-4">
@@ -310,6 +313,7 @@ export default function DailyActionsPage() {
           </div>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

@@ -7,8 +7,11 @@ import { useUser } from '@/hooks/useUser';
 import { useTheme } from '@/hooks/useTheme';
 import { getEmployerBookmarks, getOutgoingRequests, getConversations } from '@/services/firestore';
 import { logOut } from '@/services/auth';
+import { motion } from 'framer-motion';
 import Avatar from '@/components/Avatar';
 import Navbar from '@/components/Navbar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
 import { Search, Bookmark, Inbox, User, Users, Settings, LogOut, HelpCircle } from 'lucide-react';
 
 interface ActionCardProps {
@@ -20,9 +23,12 @@ interface ActionCardProps {
 
 function ActionCard({ title, description, icon, onPress }: ActionCardProps) {
   return (
-    <button
+    <motion.button
       onClick={onPress}
-      className="glass-card rounded-2xl p-4 text-left hover:bg-bg-card-hover transition-all min-h-[120px] flex flex-col justify-between group"
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="glass-card-interactive cursor-pointer rounded-2xl p-4 text-left min-h-[120px] flex flex-col justify-between group"
     >
       <div>
         <div className="text-primary mb-2">{icon}</div>
@@ -30,7 +36,7 @@ function ActionCard({ title, description, icon, onPress }: ActionCardProps) {
         <p className="text-[11px] text-text-secondary leading-4">{description}</p>
       </div>
       <span className="text-text-muted self-end text-lg group-hover:text-primary transition-colors">&rarr;</span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -80,8 +86,8 @@ export default function EmployerHomePage() {
 
   if (authLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
+        <PageSkeleton />
       </div>
     );
   }
@@ -89,7 +95,8 @@ export default function EmployerHomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-5 pt-4 pb-10">
+      <AnimatedPage>
+        <main className="max-w-6xl mx-auto px-5 pt-4 pb-10">
         {/* Header */}
         <div className="flex items-center mb-8">
           <button onClick={() => router.push('/avatar')}>
@@ -198,6 +205,7 @@ export default function EmployerHomePage() {
           Log Out
         </button>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

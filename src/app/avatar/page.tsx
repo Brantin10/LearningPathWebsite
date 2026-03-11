@@ -4,15 +4,18 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import { updateUser } from '@/services/firestore';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Avatar from '@/components/Avatar';
+import AnimatedPage from '@/components/AnimatedPage';
 
 export default function AvatarPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { profile } = useUser();
+  const toast = useToast();
 
   const handleSelect = async (index: number) => {
     if (!user) return;
@@ -20,13 +23,14 @@ export default function AvatarPage() {
       await updateUser(user.uid, { avatar: index });
       router.back();
     } catch (e: any) {
-      alert(e.message || 'Failed to update avatar.');
+      toast.error(e.message || 'Failed to update avatar.');
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
         <PageHeader title="Choose Avatar" subtitle="Pick a profile picture" />
 
@@ -48,6 +52,7 @@ export default function AvatarPage() {
           ))}
         </div>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

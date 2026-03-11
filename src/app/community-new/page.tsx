@@ -4,12 +4,14 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import { createCommunityPost } from '@/services/firestore';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Input from '@/components/Input';
 import TextArea from '@/components/TextArea';
 import Button from '@/components/Button';
+import AnimatedPage from '@/components/AnimatedPage';
 
 const CATEGORIES = [
   'General',
@@ -27,6 +29,7 @@ export default function CommunityNewPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { profile } = useUser();
+  const toast = useToast();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [category, setCategory] = useState('General');
@@ -61,7 +64,7 @@ export default function CommunityNewPage() {
       });
       router.push('/community');
     } catch (err) {
-      window.alert('Failed to create post. Please try again.');
+      toast.error('Failed to create post. Please try again.');
     } finally {
       setPosting(false);
     }
@@ -70,6 +73,7 @@ export default function CommunityNewPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
         <PageHeader title="New Post" subtitle="Share with the community" />
 
@@ -129,6 +133,7 @@ export default function CommunityNewPage() {
           />
         </div>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

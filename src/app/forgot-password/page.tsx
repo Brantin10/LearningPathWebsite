@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { resetPassword } from '@/services/auth';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
+import AnimatedPage from '@/components/AnimatedPage';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -30,8 +31,9 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center px-6">
-      <div className="max-w-md w-full">
+    <AnimatedPage>
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center px-6">
+        <div className="max-w-md w-full">
         <h1 className="text-3xl font-bold text-text-primary mb-2">Reset Password</h1>
         <p className="text-text-secondary mb-8">
           {sent ? 'Check your inbox for reset instructions.' : 'Enter your email to receive a reset link.'}
@@ -71,5 +73,6 @@ export default function ForgotPasswordPage() {
         )}
       </div>
     </div>
+    </AnimatedPage>
   );
 }

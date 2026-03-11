@@ -13,6 +13,8 @@ import {
 } from '@/services/firestore';
 import PageHeader from '@/components/PageHeader';
 import Navbar from '@/components/Navbar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
 import { Send, Trash2, Sparkles } from 'lucide-react';
 import { ChatMessage } from '@/types';
 
@@ -174,8 +176,8 @@ export default function AIChatPage() {
 
   if (authLoading || profileLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
+        <PageSkeleton />
       </div>
     );
   }
@@ -186,6 +188,7 @@ export default function AIChatPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex flex-col">
       <Navbar />
+      <AnimatedPage>
 
       {/* Header Bar */}
       <div className="max-w-3xl w-full mx-auto px-5 pt-4 pb-2 flex items-center justify-between">
@@ -320,6 +323,7 @@ export default function AIChatPage() {
           animation: bounce-dot 1.2s ease-in-out infinite;
         }
       `}</style>
+      </AnimatedPage>
     </div>
   );
 }

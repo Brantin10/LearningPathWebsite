@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import AnimatedPage from '@/components/AnimatedPage';
 
 export default function SkillQuizPage() {
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
@@ -36,6 +37,7 @@ export default function SkillQuizPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
+        <AnimatedPage>
         <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
           <PageHeader title="Skill Quiz" subtitle="Test your knowledge" />
           <div className="grid grid-cols-2 gap-3">
@@ -47,6 +49,7 @@ export default function SkillQuizPage() {
             ))}
           </div>
         </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -55,6 +58,7 @@ export default function SkillQuizPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
+        <AnimatedPage>
         <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
           <PageHeader title="Quiz Complete" />
           <Card className="text-center py-8">
@@ -64,6 +68,7 @@ export default function SkillQuizPage() {
             <Button title="Try Another" onPress={reset} className="mt-6 mx-auto" />
           </Card>
         </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -71,6 +76,7 @@ export default function SkillQuizPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
         <PageHeader title={selectedSkill || ''} subtitle={`Question ${currentQ + 1} of ${quiz?.questions.length}`} />
         <Card className="mb-4">
@@ -86,6 +92,7 @@ export default function SkillQuizPage() {
         {answered !== null && question?.explanation && <Card className="mb-4"><p className="text-sm text-text-secondary">{question.explanation}</p></Card>}
         {answered !== null && <Button title={currentQ >= (quiz?.questions.length || 0) - 1 ? 'See Results' : 'Next'} onPress={handleNext} className="w-full" />}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

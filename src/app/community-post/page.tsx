@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import {
   getCommunityPost,
   getPostReplies,
@@ -18,6 +19,9 @@ import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
 import Avatar from '@/components/Avatar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 function timeAgo(timestamp: number): string {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -41,6 +45,7 @@ function CommunityPostContent() {
   const postId = searchParams.get('postId') || '';
   const { user } = useAuth();
   const { profile } = useUser();
+  const toast = useToast();
 
   const [post, setPost] = useState<CommunityPost | null>(null);
   const [replies, setReplies] = useState<CommunityReply[]>([]);
@@ -96,14 +101,14 @@ function CommunityPostContent() {
     if (!user || !post) return;
     if (!window.confirm('Are you sure you want to report this post?')) return;
     await reportPost(postId, user.uid);
-    window.alert('Post reported. Thank you.');
+    toast.success('Post reported. Thank you.');
   };
 
   const handleReportReply = async (replyId: string) => {
     if (!user) return;
     if (!window.confirm('Are you sure you want to report this reply?')) return;
     await reportReply(postId, replyId, user.uid);
-    window.alert('Reply reported. Thank you.');
+    toast.success('Reply reported. Thank you.');
   };
 
   const handleSendReply = async () => {
@@ -128,7 +133,7 @@ function CommunityPostContent() {
         setPost({ ...post, replyCount: post.replyCount + 1 });
       }
     } catch (err) {
-      window.alert('Failed to send reply.');
+      toast.error('Failed to send reply.');
     } finally {
       setSending(false);
     }
@@ -138,16 +143,12 @@ function CommunityPostContent() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Post" />
-          <div className="flex justify-center py-20">
-            <div className="flex gap-1">
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-            </div>
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Post" />
+            <PageSkeleton />
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -156,12 +157,14 @@ function CommunityPostContent() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Post" />
-          <Card>
-            <p className="text-text-secondary text-center">Post not found.</p>
-          </Card>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Post" />
+            <Card>
+              <p className="text-text-secondary text-center">Post not found.</p>
+            </Card>
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -169,10 +172,12 @@ function CommunityPostContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Post" />
+      <AnimatedPage>
+        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+          <Breadcrumbs />
+          <PageHeader title="Post" />
 
-        {/* Post Content */}
+          {/* Post Content */}
         <Card className="mb-4">
           {/* Author Row */}
           <div className="flex items-center gap-3 mb-4">
@@ -301,6 +306,7 @@ function CommunityPostContent() {
           </button>
         </div>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

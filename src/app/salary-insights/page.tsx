@@ -1,14 +1,21 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import EmptyState from '@/components/EmptyState';
+import ScrollReveal from '@/components/ScrollReveal';
 import { getCareer, getSavedJobs } from '@/services/firestore';
 import { getSalaryData, formatSalaryAmount, formatSalaryRange } from '@/data/salaryData';
 import { CareerSalaryData, Career, SavedJob, SalaryRange } from '@/types';
+
+const SalaryChart = dynamic(() => import('@/components/charts/SalaryChart'), { ssr: false });
 
 export default function SalaryInsightsPage() {
   const router = useRouter();
@@ -66,12 +73,12 @@ export default function SalaryInsightsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Salary Insights" subtitle="Loading..." />
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Salary Insights" subtitle="Loading..." />
+            <PageSkeleton />
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -80,22 +87,18 @@ export default function SalaryInsightsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Salary Insights" subtitle="Salary data for your career" />
-          <div className="glass-card rounded-2xl p-8 text-center mt-8">
-            <p className="text-5xl mb-4">💰</p>
-            <h2 className="text-xl font-bold text-text-primary mb-2">No Career Selected</h2>
-            <p className="text-text-secondary text-sm mb-6">
-              Choose a career path to see salary ranges and insights for your target role.
-            </p>
-            <button
-              onClick={() => router.push('/career-match')}
-              className="bg-primary text-white px-6 py-3 rounded-2xl font-semibold hover:bg-primary-dark transition-colors"
-            >
-              Find Your Career
-            </button>
-          </div>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Salary Insights" subtitle="Salary data for your career" />
+            <EmptyState
+              icon="💰"
+              title="No Career Selected"
+              description="Choose a career path to see salary ranges and insights for your target role."
+              actionLabel="Find Your Career"
+              onAction={() => router.push('/career-match')}
+            />
         </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -104,16 +107,16 @@ export default function SalaryInsightsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Salary Insights" subtitle={career?.name || 'Salary data'} />
-          <div className="glass-card rounded-2xl p-8 text-center mt-8">
-            <p className="text-5xl mb-4">📊</p>
-            <h2 className="text-xl font-bold text-text-primary mb-2">No Salary Data Available</h2>
-            <p className="text-text-secondary text-sm">
-              Salary information is not yet available for &quot;{career?.name}&quot;. Check back later as we expand our database.
-            </p>
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Salary Insights" subtitle={career?.name || 'Salary data'} />
+            <EmptyState
+              icon="📊"
+              title="No Salary Data Available"
+              description={`Salary information is not yet available for "${career?.name}". Check back later as we expand our database.`}
+            />
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -127,6 +130,15 @@ export default function SalaryInsightsPage() {
     { label: 'Senior Level', range: salaryData.seniorLevel, color: '#ff6b6b' },
   ];
 
+  const salaryChartData = useMemo(() => {
+    return levels.map((l) => ({
+      level: l.label,
+      min: l.range.min,
+      max: l.range.max,
+      median: l.range.median,
+    }));
+  }, [levels]);
+
   const negotiationTips = [
     'Research the market rate for your specific role and location before negotiations.',
     'Always negotiate based on the value you bring, not your current salary.',
@@ -138,23 +150,35 @@ export default function SalaryInsightsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Salary Insights" subtitle={salaryData.careerName} />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Salary Insights" subtitle={salaryData.careerName} />
 
         {/* Hero Card */}
-        <div className="glass-card-elevated rounded-2xl p-6 mb-5 text-center">
-          <p className="text-[10px] uppercase tracking-widest text-text-muted mb-2">
-            Full Salary Range
-          </p>
-          <p className="text-3xl font-bold gradient-text">
-            {formatSalaryRange(overallMin, overallMax)}
-          </p>
-          <p className="text-sm text-text-secondary mt-2">{salaryData.careerName}</p>
-        </div>
+        <ScrollReveal>
+          <div className="glass-card-elevated rounded-2xl p-6 mb-5 text-center">
+            <p className="text-[10px] uppercase tracking-widest text-text-muted mb-2">
+              Full Salary Range
+            </p>
+            <p className="text-3xl font-bold gradient-text">
+              {formatSalaryRange(overallMin, overallMax)}
+            </p>
+            <p className="text-sm text-text-secondary mt-2">{salaryData.careerName}</p>
+          </div>
+        </ScrollReveal>
+
+        {/* Salary Chart by Level */}
+        <ScrollReveal delay={0.1}>
+          <div className="glass-card rounded-2xl p-5 mb-4">
+            <h3 className="text-lg font-semibold text-text-primary mb-4">By Experience Level</h3>
+            <SalaryChart data={salaryChartData} />
+          </div>
+        </ScrollReveal>
 
         {/* Salary Bars by Level */}
+        <ScrollReveal delay={0.2}>
         <div className="glass-card rounded-2xl p-5 mb-4">
-          <h3 className="text-lg font-semibold text-text-primary mb-4">By Experience Level</h3>
+          <h3 className="text-lg font-semibold text-text-primary mb-4">Salary Breakdown</h3>
           <div className="space-y-5">
             {levels.map((level) => {
               const barPercent = overallMax > 0
@@ -186,8 +210,10 @@ export default function SalaryInsightsPage() {
             })}
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Median Values Table */}
+        <ScrollReveal delay={0.3}>
         <div className="glass-card rounded-2xl p-5 mb-4">
           <h3 className="text-lg font-semibold text-text-primary mb-3">Median Salaries</h3>
           <div className="overflow-x-auto">
@@ -215,51 +241,58 @@ export default function SalaryInsightsPage() {
             </table>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Career Growth Rate */}
-        <div className="glass-card rounded-2xl p-5 mb-4">
-          <h3 className="text-lg font-semibold text-text-primary mb-2">Career Growth Rate</h3>
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">📈</span>
-            <div>
-              <p className="text-lg font-bold text-accent">{salaryData.growthRate}</p>
-              <p className="text-xs text-text-secondary">Projected employment growth</p>
+        <ScrollReveal delay={0.4}>
+          <div className="glass-card rounded-2xl p-5 mb-4">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">Career Growth Rate</h3>
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">📈</span>
+              <div>
+                <p className="text-lg font-bold text-accent">{salaryData.growthRate}</p>
+                <p className="text-xs text-text-secondary">Projected employment growth</p>
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Saved Jobs Average */}
         {savedJobsAvg !== null && (
-          <div className="glass-card rounded-2xl p-5 mb-4">
-            <h3 className="text-lg font-semibold text-text-primary mb-2">Your Saved Jobs</h3>
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">⭐</span>
-              <div>
-                <p className="text-lg font-bold text-accent">
-                  {formatSalaryAmount(savedJobsAvg)}/yr avg
-                </p>
-                <p className="text-xs text-text-secondary">
-                  Average salary from your saved job listings
-                </p>
+          <ScrollReveal delay={0.5}>
+            <div className="glass-card rounded-2xl p-5 mb-4">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">Your Saved Jobs</h3>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">⭐</span>
+                <div>
+                  <p className="text-lg font-bold text-accent">
+                    {formatSalaryAmount(savedJobsAvg)}/yr avg
+                  </p>
+                  <p className="text-xs text-text-secondary">
+                    Average salary from your saved job listings
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         )}
 
         {/* Negotiation Tips */}
-        <div className="glass-card rounded-2xl p-5 mb-4">
-          <h3 className="text-lg font-semibold text-text-primary mb-3">Negotiation Tips</h3>
-          <div className="space-y-3">
-            {negotiationTips.map((tip, idx) => (
-              <div key={idx} className="flex gap-3">
-                <span className="text-primary font-bold text-sm flex-shrink-0">
-                  {idx + 1}.
-                </span>
-                <p className="text-sm text-text-secondary leading-relaxed">{tip}</p>
-              </div>
-            ))}
+        <ScrollReveal delay={0.6}>
+          <div className="glass-card rounded-2xl p-5 mb-4">
+            <h3 className="text-lg font-semibold text-text-primary mb-3">Negotiation Tips</h3>
+            <div className="space-y-3">
+              {negotiationTips.map((tip, idx) => (
+                <div key={idx} className="flex gap-3">
+                  <span className="text-primary font-bold text-sm flex-shrink-0">
+                    {idx + 1}.
+                  </span>
+                  <p className="text-sm text-text-secondary leading-relaxed">{tip}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Source Attribution */}
         <div className="text-center mt-4">
@@ -271,6 +304,7 @@ export default function SalaryInsightsPage() {
           </p>
         </div>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import { getLearningPath, getCompletedSteps, saveCompletedSteps, saveLearningPath, logActivity } from '@/services/firestore';
 import { generateLearningPath, checkApiHealth } from '@/services/learningPath';
 import { LearningStep } from '@/types';
@@ -11,10 +12,14 @@ import PageHeader from '@/components/PageHeader';
 import StepCard from '@/components/StepCard';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export default function StepsPage() {
   const { user } = useAuth();
   const { profile } = useUser();
+  const toast = useToast();
   const [steps, setSteps] = useState<LearningStep[]>([]);
   const [completed, setCompleted] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +60,7 @@ export default function StepsPage() {
       setSteps(result.learning_path || []);
       await saveLearningPath(user.uid, careerId, result);
     } catch (e: any) {
-      alert(e.message || 'Failed to generate learning path.');
+      toast.error(e.message || 'Failed to generate learning path.');
     } finally {
       setGenerating(false);
     }
@@ -64,11 +69,13 @@ export default function StepsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Learning Steps" subtitle="Your personalized roadmap" />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <Breadcrumbs />
+          <PageHeader title="Learning Steps" subtitle="Your personalized roadmap" />
 
         {loading ? (
-          <div className="flex justify-center py-20"><div className="flex gap-1"><span className="typing-dot w-3 h-3 rounded-full bg-primary" /><span className="typing-dot w-3 h-3 rounded-full bg-primary" /><span className="typing-dot w-3 h-3 rounded-full bg-primary" /></div></div>
+          <PageSkeleton />
         ) : steps.length === 0 ? (
           <Card className="text-center py-8">
             <p className="text-4xl mb-4">📚</p>
@@ -89,6 +96,7 @@ export default function StepsPage() {
           </>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

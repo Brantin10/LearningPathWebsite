@@ -2,15 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
 import { getNotificationPreferences, saveNotificationPreferences } from '@/services/firestore';
 import { DEFAULT_NOTIFICATION_PREFS, NotificationPreferences } from '@/types';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import AnimatedPage from '@/components/AnimatedPage';
 
 export default function NotificationSettingsPage() {
   const { user } = useAuth();
+  const toast = useToast();
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFS);
   const [loading, setLoading] = useState(false);
 
@@ -30,9 +33,9 @@ export default function NotificationSettingsPage() {
     setLoading(true);
     try {
       await saveNotificationPreferences(user.uid, prefs);
-      alert('Preferences saved!');
+      toast.success('Preferences saved!');
     } catch {
-      alert('Failed to save.');
+      toast.error('Failed to save.');
     } finally {
       setLoading(false);
     }
@@ -48,6 +51,7 @@ export default function NotificationSettingsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
         <PageHeader title="Notifications" subtitle="Manage your notification preferences" />
 
@@ -99,6 +103,7 @@ export default function NotificationSettingsPage() {
 
         <Button title="Save Preferences" onPress={handleSave} loading={loading} className="w-full mt-6" />
       </main>
+      </AnimatedPage>
     </div>
   );
 }

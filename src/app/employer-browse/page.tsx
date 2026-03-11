@@ -9,6 +9,9 @@ import { getVisibleSeekers, getAllCareers } from '@/services/firestore';
 import Avatar from '@/components/Avatar';
 import PageHeader from '@/components/PageHeader';
 import Navbar from '@/components/Navbar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import StaggerList, { StaggerItem } from '@/components/StaggerList';
 import { Search, ChevronRight } from 'lucide-react';
 import { CandidateListItem, Career } from '@/types';
 
@@ -90,8 +93,8 @@ export default function EmployerBrowsePage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
+        <PageSkeleton />
       </div>
     );
   }
@@ -99,8 +102,9 @@ export default function EmployerBrowsePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Browse Candidates" subtitle="DISCOVER" />
+      <AnimatedPage>
+        <main className="max-w-4xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Browse Candidates" subtitle="DISCOVER" />
 
         {/* Search Input */}
         <div className="relative mb-4">
@@ -146,7 +150,7 @@ export default function EmployerBrowsePage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <StaggerList className="space-y-3">
             {filtered.map((candidate) => {
               const careerName = careerNameMap[candidate.chosenCareer] || 'Exploring';
               const skillsArray = candidate.skills
@@ -154,49 +158,51 @@ export default function EmployerBrowsePage() {
                 : [];
 
               return (
-                <button
-                  key={candidate.uid}
-                  onClick={() => router.push(`/employer-candidate?candidateUid=${candidate.uid}`)}
-                  className="w-full glass-card rounded-2xl p-4 text-left hover:bg-bg-card-hover transition-colors flex items-center gap-4"
-                >
-                  <Avatar index={candidate.avatar} size={48} />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-[15px] font-semibold text-text-primary truncate">
-                      {candidate.username}
-                    </h3>
-                    {candidate.currentJob && (
-                      <p className="text-[12px] text-text-secondary truncate">
-                        {candidate.currentJob}
-                      </p>
-                    )}
-                    <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-accent-muted text-accent border border-[rgba(100,255,218,0.3)]">
-                      {careerName}
-                    </span>
-                    {skillsArray.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {skillsArray.slice(0, 4).map((skill) => (
-                          <span
-                            key={skill}
-                            className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary-muted text-primary border border-[rgba(39,174,96,0.3)]"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                        {skillsArray.length > 4 && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-text-muted">
-                            +{skillsArray.length - 4} more
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <ChevronRight size={20} className="text-text-muted flex-shrink-0" />
-                </button>
+                <StaggerItem key={candidate.uid}>
+                  <button
+                    onClick={() => router.push(`/employer-candidate?candidateUid=${candidate.uid}`)}
+                    className="w-full glass-card rounded-2xl p-4 text-left hover:bg-bg-card-hover transition-colors flex items-center gap-4"
+                  >
+                    <Avatar index={candidate.avatar} size={48} />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-[15px] font-semibold text-text-primary truncate">
+                        {candidate.username}
+                      </h3>
+                      {candidate.currentJob && (
+                        <p className="text-[12px] text-text-secondary truncate">
+                          {candidate.currentJob}
+                        </p>
+                      )}
+                      <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-accent-muted text-accent border border-[rgba(100,255,218,0.3)]">
+                        {careerName}
+                      </span>
+                      {skillsArray.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {skillsArray.slice(0, 4).map((skill) => (
+                            <span
+                              key={skill}
+                              className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary-muted text-primary border border-[rgba(39,174,96,0.3)]"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                          {skillsArray.length > 4 && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-text-muted">
+                              +{skillsArray.length - 4} more
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <ChevronRight size={20} className="text-text-muted flex-shrink-0" />
+                  </button>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerList>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

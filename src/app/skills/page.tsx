@@ -7,6 +7,7 @@ import { Career } from '@/types';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
+import AnimatedPage from '@/components/AnimatedPage';
 
 export default function SkillsPage() {
   const { profile } = useUser();
@@ -19,6 +20,7 @@ export default function SkillsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
         <PageHeader title="Required Skills" subtitle={career?.name || 'Skills to develop'} />
         {career?.skills?.length ? (
@@ -38,6 +40,7 @@ export default function SkillsPage() {
           <Card><p className="text-text-secondary">No skills data available.</p></Card>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

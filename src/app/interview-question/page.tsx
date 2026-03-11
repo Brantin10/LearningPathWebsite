@@ -10,6 +10,8 @@ import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import TextArea from '@/components/TextArea';
+import AnimatedPage from '@/components/AnimatedPage';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 function InterviewQuestionContent() {
   const params = useSearchParams();
@@ -21,7 +23,7 @@ function InterviewQuestionContent() {
   const [rating, setRating] = useState(0);
   const [saved, setSaved] = useState(false);
 
-  if (!question) return <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated"><Navbar /><main className="max-w-2xl mx-auto px-5 pt-4"><PageHeader title="Question Not Found" /></main></div>;
+  if (!question) return <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated"><Navbar /><AnimatedPage><main className="max-w-2xl mx-auto px-5 pt-4"><PageHeader title="Question Not Found" /></main></AnimatedPage></div>;
 
   const handleSave = async () => {
     if (!user) return;
@@ -32,7 +34,9 @@ function InterviewQuestionContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+        <Breadcrumbs />
         <PageHeader title={question.category} subtitle={`${question.difficulty} - ${question.type}`} />
 
         <Card className="mb-4">
@@ -75,6 +79,7 @@ function InterviewQuestionContent() {
 
         <Button title={saved ? 'Saved!' : 'Save Attempt'} onPress={handleSave} disabled={saved} className="w-full" />
       </main>
+      </AnimatedPage>
     </div>
   );
 }

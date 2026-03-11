@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
 import { useTheme } from '@/hooks/useTheme';
+import { useToast } from '@/hooks/useToast';
 import {
   getUser,
   getCareer,
@@ -23,6 +24,9 @@ import PageHeader from '@/components/PageHeader';
 import ProgressBar from '@/components/ProgressBar';
 import Card from '@/components/Card';
 import Navbar from '@/components/Navbar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import { Bookmark, BookmarkCheck, Send, Save } from 'lucide-react';
 import { AppUser, Career, EmployerBookmark } from '@/types';
 
@@ -33,6 +37,7 @@ function EmployerCandidateContent() {
   const { user, loading: authLoading } = useAuth();
   const { profile } = useUser();
   const { colors } = useTheme();
+  const toast = useToast();
 
   const [candidate, setCandidate] = useState<AppUser | null>(null);
   const [career, setCareer] = useState<Career | null>(null);
@@ -58,7 +63,7 @@ function EmployerCandidateContent() {
         ]);
 
         if (!candidateData) {
-          window.alert('Candidate not found.');
+          toast.error('Candidate not found.');
           router.back();
           return;
         }
@@ -118,7 +123,7 @@ function EmployerCandidateContent() {
       }
     } catch (err) {
       console.error('Bookmark toggle failed:', err);
-      window.alert('Failed to update bookmark. Please try again.');
+      toast.error('Failed to update bookmark. Please try again.');
     }
   }, [user, candidate, saved, candidateUid]);
 
@@ -126,7 +131,7 @@ function EmployerCandidateContent() {
     if (!user || !profile || !candidate) return;
 
     if (alreadyRequested) {
-      window.alert('You have already sent a contact request to this candidate.');
+      toast.warning('You have already sent a contact request to this candidate.');
       return;
     }
 
@@ -150,10 +155,10 @@ function EmployerCandidateContent() {
         createdAt: Date.now(),
       });
       setAlreadyRequested(true);
-      window.alert('Contact request sent successfully!');
+      toast.success('Contact request sent successfully!');
     } catch (err) {
       console.error('Send request failed:', err);
-      window.alert('Failed to send contact request. Please try again.');
+      toast.error('Failed to send contact request. Please try again.');
     } finally {
       setSendingRequest(false);
     }
@@ -167,14 +172,14 @@ function EmployerCandidateContent() {
       setTimeout(() => setNoteSaved(false), 2000);
     } catch (err) {
       console.error('Save note failed:', err);
-      window.alert('Failed to save note.');
+      toast.error('Failed to save note.');
     }
   }, [user, candidateUid, note]);
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
+        <PageSkeleton />
       </div>
     );
   }
@@ -196,8 +201,10 @@ function EmployerCandidateContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Candidate Profile" />
+      <AnimatedPage>
+        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+          <Breadcrumbs />
+          <PageHeader title="Candidate Profile" />
 
         {/* Profile Card */}
         <Card className="mb-5">
@@ -332,6 +339,7 @@ function EmployerCandidateContent() {
           </button>
         </div>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

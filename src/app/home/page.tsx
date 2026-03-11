@@ -6,6 +6,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
 import Navbar from '@/components/Navbar';
 import Avatar from '@/components/Avatar';
+import AnimatedPage from '@/components/AnimatedPage';
+import StaggerList, { StaggerItem } from '@/components/StaggerList';
+import { motion } from 'framer-motion';
 import { Sparkles, ListChecks, HelpCircle, Search, Briefcase, User, FileText, Globe, MessageSquare, BarChart3, BookOpen, TrendingUp, Users, MessagesSquare, Brain, Inbox, Settings, Zap } from 'lucide-react';
 
 interface ActionCardProps {
@@ -17,9 +20,12 @@ interface ActionCardProps {
 
 function ActionCard({ title, description, icon, onPress }: ActionCardProps) {
   return (
-    <button
+    <motion.button
       onClick={onPress}
-      className="glass-card rounded-2xl p-4 text-left hover:bg-bg-card-hover transition-all min-h-[120px] flex flex-col justify-between group"
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="glass-card-interactive cursor-pointer rounded-2xl p-4 text-left min-h-[120px] flex flex-col justify-between group"
     >
       <div>
         <div className="text-primary mb-2">{icon}</div>
@@ -27,7 +33,7 @@ function ActionCard({ title, description, icon, onPress }: ActionCardProps) {
         <p className="text-[11px] text-text-secondary leading-4">{description}</p>
       </div>
       <span className="text-text-muted self-end text-lg group-hover:text-primary transition-colors">&rarr;</span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -43,7 +49,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-5 pt-4 pb-10">
+      <AnimatedPage>
+        <main className="max-w-6xl mx-auto px-5 pt-4 pb-10">
         {/* Header */}
         <div className="flex items-center mb-8">
           <button onClick={() => router.push('/avatar')}>
@@ -68,32 +75,33 @@ export default function HomePage() {
         </button>
 
         {/* Action Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          <ActionCard title="AI Coach" description="Get personalized career advice" icon={<Sparkles size={22} />} onPress={() => router.push('/ai-chat')} />
-          <ActionCard title="Daily Actions" description="Your personalized daily to-dos" icon={<ListChecks size={22} />} onPress={() => router.push('/daily-actions')} />
-          <ActionCard title="Career Quiz" description="Answer questions to find your match" icon={<HelpCircle size={22} />} onPress={() => router.push('/questionnaire')} />
-          <ActionCard title="Find Careers" description="Discover your top career matches" icon={<Search size={22} />} onPress={() => router.push('/career-match')} />
+        <StaggerList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <StaggerItem><ActionCard title="AI Coach" description="Get personalized career advice" icon={<Sparkles size={22} />} onPress={() => router.push('/ai-chat')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Daily Actions" description="Your personalized daily to-dos" icon={<ListChecks size={22} />} onPress={() => router.push('/daily-actions')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Career Quiz" description="Answer questions to find your match" icon={<HelpCircle size={22} />} onPress={() => router.push('/questionnaire')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Find Careers" description="Discover your top career matches" icon={<Search size={22} />} onPress={() => router.push('/career-match')} /></StaggerItem>
           {hasCareer && (
-            <ActionCard title="My Career" description="View your career path and progress" icon={<Briefcase size={22} />} onPress={() => router.push('/career-manager')} />
+            <StaggerItem><ActionCard title="My Career" description="View your career path and progress" icon={<Briefcase size={22} />} onPress={() => router.push('/career-manager')} /></StaggerItem>
           )}
-          <ActionCard title="Profile" description="Edit your skills and experience" icon={<User size={22} />} onPress={() => router.push('/profile-setup')} />
-          <ActionCard title="Resume" description="Build and share your CV" icon={<FileText size={22} />} onPress={() => router.push('/cv')} />
-          <ActionCard title="Job Search" description="Find remote job openings" icon={<Globe size={22} />} onPress={() => router.push('/job-search')} />
-          <ActionCard title="Interview Prep" description="Practice with STAR method" icon={<MessageSquare size={22} />} onPress={() => router.push('/interview-prep')} />
-          <ActionCard title="Applications" description="Track your job applications" icon={<BarChart3 size={22} />} onPress={() => router.push('/application-tracker')} />
-          <ActionCard title="Progress" description="Track streaks, badges and progress" icon={<TrendingUp size={22} />} onPress={() => router.push('/progress')} />
+          <StaggerItem><ActionCard title="Profile" description="Edit your skills and experience" icon={<User size={22} />} onPress={() => router.push('/profile-setup')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Resume" description="Build and share your CV" icon={<FileText size={22} />} onPress={() => router.push('/cv')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Job Search" description="Find remote job openings" icon={<Globe size={22} />} onPress={() => router.push('/job-search')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Interview Prep" description="Practice with STAR method" icon={<MessageSquare size={22} />} onPress={() => router.push('/interview-prep')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Applications" description="Track your job applications" icon={<BarChart3 size={22} />} onPress={() => router.push('/application-tracker')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Progress" description="Track streaks, badges and progress" icon={<TrendingUp size={22} />} onPress={() => router.push('/progress')} /></StaggerItem>
           {hasCareer && (
-            <ActionCard title="My Journey" description="Your before & after progress story" icon={<BookOpen size={22} />} onPress={() => router.push('/progress-story')} />
+            <StaggerItem><ActionCard title="My Journey" description="Your before & after progress story" icon={<BookOpen size={22} />} onPress={() => router.push('/progress-story')} /></StaggerItem>
           )}
-          <ActionCard title="Skills Gap" description="Analyze your skills vs career" icon={<Zap size={22} />} onPress={() => router.push('/skills-gap')} />
-          <ActionCard title="Salary Insights" description="See salary ranges for your career" icon={<TrendingUp size={22} />} onPress={() => router.push('/salary-insights')} />
-          <ActionCard title="Networking" description="Communities, mentors and tips" icon={<Users size={22} />} onPress={() => router.push('/networking')} />
-          <ActionCard title="Community" description="Discuss with other career changers" icon={<MessagesSquare size={22} />} onPress={() => router.push('/community')} />
-          <ActionCard title="Inbox" description="Messages and contact requests" icon={<Inbox size={22} />} onPress={() => router.push('/inbox')} />
-          <ActionCard title="Skill Quiz" description="Test your knowledge with quick quizzes" icon={<Brain size={22} />} onPress={() => router.push('/skill-quiz')} />
-          <ActionCard title="Settings" description="Privacy, notifications & account" icon={<Settings size={22} />} onPress={() => router.push('/settings')} />
-        </div>
+          <StaggerItem><ActionCard title="Skills Gap" description="Analyze your skills vs career" icon={<Zap size={22} />} onPress={() => router.push('/skills-gap')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Salary Insights" description="See salary ranges for your career" icon={<TrendingUp size={22} />} onPress={() => router.push('/salary-insights')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Networking" description="Communities, mentors and tips" icon={<Users size={22} />} onPress={() => router.push('/networking')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Community" description="Discuss with other career changers" icon={<MessagesSquare size={22} />} onPress={() => router.push('/community')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Inbox" description="Messages and contact requests" icon={<Inbox size={22} />} onPress={() => router.push('/inbox')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Skill Quiz" description="Test your knowledge with quick quizzes" icon={<Brain size={22} />} onPress={() => router.push('/skill-quiz')} /></StaggerItem>
+          <StaggerItem><ActionCard title="Settings" description="Privacy, notifications & account" icon={<Settings size={22} />} onPress={() => router.push('/settings')} /></StaggerItem>
+        </StaggerList>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

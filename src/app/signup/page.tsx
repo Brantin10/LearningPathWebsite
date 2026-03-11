@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { signUp } from '@/services/auth';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
+import AnimatedPage from '@/components/AnimatedPage';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -49,8 +50,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center px-6">
-      <div className="max-w-md w-full">
+    <AnimatedPage>
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center px-6">
+        <div className="max-w-md w-full">
         <h1 className="text-3xl font-bold text-text-primary mb-2">Create Account</h1>
         <p className="text-text-secondary mb-8">Start your career journey today</p>
 
@@ -119,5 +121,6 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+    </AnimatedPage>
   );
 }

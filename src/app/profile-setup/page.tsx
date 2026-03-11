@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import { updateUser } from '@/services/firestore';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
@@ -11,6 +12,7 @@ import Input from '@/components/Input';
 import TextArea from '@/components/TextArea';
 import Button from '@/components/Button';
 import Avatar from '@/components/Avatar';
+import AnimatedPage from '@/components/AnimatedPage';
 
 const SKILL_OPTIONS = ['JavaScript', 'Python', 'React', 'Node.js', 'SQL', 'HTML/CSS', 'Java', 'TypeScript', 'C#', 'Git', 'AWS', 'Docker', 'Excel', 'Marketing', 'Design', 'Communication'];
 
@@ -18,6 +20,7 @@ export default function ProfileSetupPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { profile } = useUser();
+  const toast = useToast();
   const [age, setAge] = useState('');
   const [currentJob, setCurrentJob] = useState('');
   const [education, setEducation] = useState('');
@@ -44,9 +47,9 @@ export default function ProfileSetupPage() {
         skills,
         profileCompleted: true,
       });
-      alert('Profile saved!');
+      toast.success('Profile saved!');
     } catch (e: any) {
-      alert(e.message || 'Failed to save profile.');
+      toast.error(e.message || 'Failed to save profile.');
     } finally {
       setLoading(false);
     }
@@ -63,6 +66,7 @@ export default function ProfileSetupPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
         <PageHeader title="Profile Setup" subtitle="Tell us about yourself" />
 
@@ -101,6 +105,7 @@ export default function ProfileSetupPage() {
 
         <Button title="Save Profile" onPress={handleSave} loading={loading} className="w-full" />
       </main>
+      </AnimatedPage>
     </div>
   );
 }

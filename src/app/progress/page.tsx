@@ -1,15 +1,21 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import ProgressBar from '@/components/ProgressBar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import StaggerList, { StaggerItem } from '@/components/StaggerList';
 import { getCompletedSteps, getActivityLog, getCareer, getLearningPath } from '@/services/firestore';
 import { computeBadges, calculateStreak } from '@/data/badges';
 import { Badge, ActivityLog, Career } from '@/types';
+
+const ActivityChart = dynamic(() => import('@/components/charts/ActivityChart'), { ssr: false });
 
 export default function ProgressPage() {
   const router = useRouter();
@@ -59,12 +65,12 @@ export default function ProgressPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Progress" subtitle="Loading..." />
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Progress" subtitle="Loading..." />
+            <PageSkeleton />
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -73,8 +79,9 @@ export default function ProgressPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Progress" subtitle="Track your career journey" />
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Progress" subtitle="Track your career journey" />
           <div className="glass-card rounded-2xl p-8 text-center mt-8">
             <p className="text-5xl mb-4">🎯</p>
             <h2 className="text-xl font-bold text-text-primary mb-2">No Career Selected</h2>
@@ -89,6 +96,7 @@ export default function ProgressPage() {
             </button>
           </div>
         </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -97,6 +105,20 @@ export default function ProgressPage() {
   const streak = calculateStreak(activityLog);
   const earnedBadges = badges.filter((b) => b.earned);
   const lockedBadges = badges.filter((b) => !b.earned);
+
+  const activityChartData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    activityLog.forEach((entry) => {
+      counts[entry.date] = (counts[entry.date] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-14)
+      .map(([date, count]) => ({
+        date: date.slice(5), // MM-DD
+        count,
+      }));
+  }, [activityLog]);
 
   const recentActivity = [...activityLog]
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -111,8 +133,9 @@ export default function ProgressPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Progress" subtitle={career?.name || 'Track your career journey'} />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Progress" subtitle={career?.name || 'Track your career journey'} />
 
         {/* Overall Progress */}
         <div className="glass-card rounded-2xl p-5 mb-4">
@@ -142,33 +165,43 @@ export default function ProgressPage() {
           </div>
         </div>
 
+        {/* Activity Chart */}
+        {activityChartData.length > 0 && (
+          <div className="glass-card rounded-2xl p-5 mb-4">
+            <h2 className="text-lg font-semibold text-text-primary mb-3">Activity Over Time</h2>
+            <ActivityChart data={activityChartData} />
+          </div>
+        )}
+
         {/* Badge Grid */}
         <div className="glass-card rounded-2xl p-5 mb-4">
           <h2 className="text-lg font-semibold text-text-primary mb-3">
             Badges ({earnedBadges.length}/{badges.length})
           </h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+          <StaggerList className="grid grid-cols-3 sm:grid-cols-4 gap-3">
             {earnedBadges.map((badge) => (
-              <div
-                key={badge.id}
-                className="glass-card-elevated rounded-xl p-3 text-center"
-              >
-                <p className="text-2xl mb-1">{badge.icon}</p>
-                <p className="text-xs font-semibold text-text-primary leading-tight">{badge.name}</p>
-                <p className="text-[10px] text-text-secondary mt-0.5 leading-tight">{badge.description}</p>
-              </div>
+              <StaggerItem key={badge.id}>
+                <div
+                  className="glass-card-elevated rounded-xl p-3 text-center"
+                >
+                  <p className="text-2xl mb-1">{badge.icon}</p>
+                  <p className="text-xs font-semibold text-text-primary leading-tight">{badge.name}</p>
+                  <p className="text-[10px] text-text-secondary mt-0.5 leading-tight">{badge.description}</p>
+                </div>
+              </StaggerItem>
             ))}
             {lockedBadges.map((badge) => (
-              <div
-                key={badge.id}
-                className="glass-card rounded-xl p-3 text-center opacity-30"
-              >
-                <p className="text-2xl mb-1">{badge.icon}</p>
-                <p className="text-xs font-semibold text-text-primary leading-tight">{badge.name}</p>
-                <p className="text-[10px] text-text-secondary mt-0.5 leading-tight">{badge.description}</p>
-              </div>
+              <StaggerItem key={badge.id}>
+                <div
+                  className="glass-card rounded-xl p-3 text-center opacity-30"
+                >
+                  <p className="text-2xl mb-1">{badge.icon}</p>
+                  <p className="text-xs font-semibold text-text-primary leading-tight">{badge.name}</p>
+                  <p className="text-[10px] text-text-secondary mt-0.5 leading-tight">{badge.description}</p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerList>
           {earnedBadges.length === 0 && (
             <p className="text-center text-text-muted text-sm mt-3">
               Complete steps and stay active to earn badges!
@@ -206,6 +239,7 @@ export default function ProgressPage() {
           )}
         </div>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

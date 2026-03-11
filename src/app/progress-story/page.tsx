@@ -4,9 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Avatar from '@/components/Avatar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
 import { getCompletedSteps, getActivityLog, getCareer, getLearningPath, getApplications, getInterviewAttempts } from '@/services/firestore';
 import { computeBadges, calculateStreak } from '@/data/badges';
 import { analyzeSkillsGap } from '@/utils/skillsMatcher';
@@ -24,6 +27,7 @@ export default function ProgressStoryPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useUser();
+  const toast = useToast();
 
   const [career, setCareer] = useState<Career | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
@@ -190,9 +194,9 @@ export default function ProgressStoryPage() {
     ].join('\n');
 
     navigator.clipboard.writeText(text).then(() => {
-      window.alert('Journey summary copied to clipboard!');
+      toast.info('Journey summary copied to clipboard!');
     }).catch(() => {
-      window.alert('Could not copy to clipboard.');
+      toast.error('Could not copy to clipboard.');
     });
   };
 
@@ -200,12 +204,12 @@ export default function ProgressStoryPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="My Journey" subtitle="Loading..." />
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="My Journey" subtitle="Loading..." />
+          <PageSkeleton />
         </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -214,8 +218,9 @@ export default function ProgressStoryPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="My Journey" subtitle="Your progress story" />
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="My Journey" subtitle="Your progress story" />
           <div className="glass-card rounded-2xl p-8 text-center mt-8">
             <p className="text-5xl mb-4">📖</p>
             <h2 className="text-xl font-bold text-text-primary mb-2">No Career Selected</h2>
@@ -230,6 +235,7 @@ export default function ProgressStoryPage() {
             </button>
           </div>
         </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -237,8 +243,9 @@ export default function ProgressStoryPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="My Journey" subtitle={career?.name || 'Your progress story'} />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="My Journey" subtitle={career?.name || 'Your progress story'} />
 
         {/* Hero Card */}
         <div className="glass-card-elevated rounded-2xl p-6 mb-5 text-center">
@@ -350,6 +357,7 @@ export default function ProgressStoryPage() {
           Share My Journey
         </button>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

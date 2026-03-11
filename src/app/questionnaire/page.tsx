@@ -3,17 +3,20 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
 import { QUESTIONS, getVisibleQuestions } from '@/data/questions';
 import { saveAnswers, updateUser } from '@/services/firestore';
 import { Answers } from '@/types';
 import Navbar from '@/components/Navbar';
 import ProgressBar from '@/components/ProgressBar';
 import Button from '@/components/Button';
+import AnimatedPage from '@/components/AnimatedPage';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function QuestionnairePage() {
   const router = useRouter();
   const { user } = useAuth();
+  const toast = useToast();
   const [answers, setAnswers] = useState<Answers>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -45,7 +48,7 @@ export default function QuestionnairePage() {
 
   const handleNext = () => {
     if (!canProceed() && question.required) {
-      alert('Please answer this question.');
+      toast.warning('Please answer this question.');
       return;
     }
     if (isLast) handleSubmit();
@@ -63,10 +66,10 @@ export default function QuestionnairePage() {
     try {
       await saveAnswers(user.uid, answers);
       if (answers.desired_role) await updateUser(user.uid, { desiredJob: answers.desired_role });
-      alert('Your answers have been saved!');
+      toast.success('Your answers have been saved!');
       router.push('/career-match');
     } catch (err: any) {
-      alert(err.message || 'Failed to save');
+      toast.error(err.message || 'Failed to save');
     } finally {
       setLoading(false);
     }
@@ -77,6 +80,7 @@ export default function QuestionnairePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-6 pt-4 pb-10 flex flex-col min-h-[calc(100vh-64px)]">
         <ProgressBar progress={progress} label={`Question ${currentIndex + 1} of ${visibleQuestions.length}`} />
 
@@ -156,6 +160,7 @@ export default function QuestionnairePage() {
           <Button title={isLast ? 'Submit' : 'Next'} onPress={handleNext} loading={loading} className="flex-1" />
         </div>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

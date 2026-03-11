@@ -5,10 +5,14 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
 import { useTheme } from '@/hooks/useTheme';
+import { useToast } from '@/hooks/useToast';
 import { getEmployerBookmarks, removeEmployerBookmark } from '@/services/firestore';
 import Avatar from '@/components/Avatar';
 import PageHeader from '@/components/PageHeader';
 import Navbar from '@/components/Navbar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import EmptyState from '@/components/EmptyState';
 import { X, Search } from 'lucide-react';
 import { EmployerBookmark } from '@/types';
 
@@ -17,6 +21,7 @@ export default function EmployerSavedPage() {
   const { user, loading: authLoading } = useAuth();
   const { profile } = useUser();
   const { colors } = useTheme();
+  const toast = useToast();
 
   const [bookmarks, setBookmarks] = useState<EmployerBookmark[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +55,7 @@ export default function EmployerSavedPage() {
         setBookmarks((prev) => prev.filter((b) => b.seekerUid !== seekerUid));
       } catch (err) {
         console.error('Remove bookmark failed:', err);
-        window.alert('Failed to remove bookmark. Please try again.');
+        toast.error('Failed to remove bookmark. Please try again.');
       }
     },
     [user]
@@ -66,8 +71,8 @@ export default function EmployerSavedPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
+        <PageSkeleton />
       </div>
     );
   }
@@ -75,8 +80,9 @@ export default function EmployerSavedPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Saved Candidates" subtitle="YOUR TALENT" />
+      <AnimatedPage>
+        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Saved Candidates" subtitle="YOUR TALENT" />
 
         {/* Count */}
         <p className="text-sm text-text-secondary mb-5">
@@ -84,21 +90,13 @@ export default function EmployerSavedPage() {
         </p>
 
         {bookmarks.length === 0 ? (
-          /* Empty State */
-          <div className="glass-card rounded-2xl p-10 text-center">
-            <p className="text-4xl mb-3">&#128278;</p>
-            <p className="text-lg font-semibold text-text-primary mb-2">No saved candidates yet</p>
-            <p className="text-sm text-text-secondary mb-6">
-              Browse candidates and save the ones that match your needs.
-            </p>
-            <button
-              onClick={() => router.push('/employer-browse')}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white font-semibold hover:bg-primary-dark transition-colors"
-            >
-              <Search size={18} />
-              Browse Candidates
-            </button>
-          </div>
+          <EmptyState
+            icon="🔖"
+            title="No saved candidates yet"
+            description="Browse candidates and save the ones that match your needs."
+            actionLabel="Browse Candidates"
+            onAction={() => router.push('/employer-browse')}
+          />
         ) : (
           /* Bookmark Cards */
           <div className="space-y-3">
@@ -164,6 +162,7 @@ export default function EmployerSavedPage() {
           </div>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { Career } from '@/types';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
+import AnimatedPage from '@/components/AnimatedPage';
 
 export default function JobsPage() {
   const { profile } = useUser();
@@ -24,8 +25,9 @@ export default function JobsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Related Jobs" subtitle={career?.name || 'Jobs for your career'} />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Related Jobs" subtitle={career?.name || 'Jobs for your career'} />
         {jobs.length === 0 ? <Card><p className="text-text-secondary">No related jobs available.</p></Card>
         : <div className="space-y-3">{jobs.map((job, i) => (
             <Card key={i}>
@@ -35,6 +37,7 @@ export default function JobsPage() {
             </Card>
           ))}</div>}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

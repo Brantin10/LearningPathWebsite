@@ -5,23 +5,32 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
 import { useTheme } from '@/hooks/useTheme';
+import { useToast } from '@/hooks/useToast';
 import { logOut } from '@/services/auth';
 import { updateUser } from '@/services/firestore';
 import { setLPApiBaseUrl, getLPApiBaseUrl } from '@/config/api';
+import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Card from '@/components/Card';
 import PageHeader from '@/components/PageHeader';
+import AnimatedPage from '@/components/AnimatedPage';
 
 function SettingLink({ icon, title, desc, onPress }: { icon: string; title: string; desc: string; onPress: () => void }) {
   return (
-    <button onClick={onPress} className="w-full flex items-center glass-card rounded-2xl p-4 mb-3 text-left hover:bg-bg-card-hover transition-colors">
+    <motion.button
+      onClick={onPress}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="w-full flex items-center glass-card-interactive cursor-pointer rounded-2xl p-4 mb-3 text-left"
+    >
       <span className="text-2xl mr-3">{icon}</span>
       <div className="flex-1">
         <p className="text-[15px] font-semibold text-text-primary">{title}</p>
         <p className="text-[11px] text-text-secondary mt-0.5">{desc}</p>
       </div>
       <span className="text-text-muted text-lg ml-2">&rarr;</span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -30,6 +39,7 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { profile } = useUser();
   const { isDark, toggleTheme } = useTheme();
+  const toast = useToast();
   const isSeeker = !profile?.role || profile.role === 'seeker';
   const [lpUrl, setLpUrl] = React.useState('');
 
@@ -47,6 +57,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
+      <AnimatedPage>
       <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
         <PageHeader title="Settings" subtitle="Manage your account and preferences" />
 
@@ -89,7 +100,7 @@ export default function SettingsPage() {
               placeholder="http://localhost:8000"
             />
             <button
-              onClick={() => { setLPApiBaseUrl(lpUrl); alert('LP API URL saved!'); }}
+              onClick={() => { setLPApiBaseUrl(lpUrl); toast.success('LP API URL saved!'); }}
               className="bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-dark transition-colors"
             >
               Save
@@ -141,6 +152,7 @@ export default function SettingsPage() {
           Log Out
         </button>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

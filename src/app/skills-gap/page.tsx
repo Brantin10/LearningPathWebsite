@@ -2,13 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
 import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
 import { getCareer } from '@/services/firestore';
 import { analyzeSkillsGap } from '@/utils/skillsMatcher';
 import { SkillsGapAnalysis, Career } from '@/types';
+
+const SkillMatchChart = dynamic(() => import('@/components/charts/SkillMatchChart'), { ssr: false });
 
 export default function SkillsGapPage() {
   const router = useRouter();
@@ -47,12 +52,12 @@ export default function SkillsGapPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Skills Gap" subtitle="Loading..." />
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Skills Gap" subtitle="Loading..." />
+            <PageSkeleton />
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -62,22 +67,24 @@ export default function SkillsGapPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Skills Gap" subtitle="Analyze your skills" />
-          <div className="glass-card rounded-2xl p-8 text-center mt-8">
-            <p className="text-5xl mb-4">🎯</p>
-            <h2 className="text-xl font-bold text-text-primary mb-2">No Career Selected</h2>
-            <p className="text-text-secondary text-sm mb-6">
-              Choose a career path first to analyze your skills gap.
-            </p>
-            <button
-              onClick={() => router.push('/career-match')}
-              className="bg-primary text-white px-6 py-3 rounded-2xl font-semibold hover:bg-primary-dark transition-colors"
-            >
-              Find Your Career
-            </button>
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Skills Gap" subtitle="Analyze your skills" />
+            <div className="glass-card rounded-2xl p-8 text-center mt-8">
+              <p className="text-5xl mb-4">🎯</p>
+              <h2 className="text-xl font-bold text-text-primary mb-2">No Career Selected</h2>
+              <p className="text-text-secondary text-sm mb-6">
+                Choose a career path first to analyze your skills gap.
+              </p>
+              <button
+                onClick={() => router.push('/career-match')}
+                className="bg-primary text-white px-6 py-3 rounded-2xl font-semibold hover:bg-primary-dark transition-colors"
+              >
+                Find Your Career
+              </button>
+            </div>
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -87,22 +94,24 @@ export default function SkillsGapPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-          <PageHeader title="Skills Gap" subtitle={career?.name || 'Analyze your skills'} />
-          <div className="glass-card rounded-2xl p-8 text-center mt-8">
-            <p className="text-5xl mb-4">📝</p>
-            <h2 className="text-xl font-bold text-text-primary mb-2">No Skills Listed</h2>
-            <p className="text-text-secondary text-sm mb-6">
-              Add your skills in your profile so we can compare them against your target career.
-            </p>
-            <button
-              onClick={() => router.push('/profile-setup')}
-              className="bg-primary text-white px-6 py-3 rounded-2xl font-semibold hover:bg-primary-dark transition-colors"
-            >
-              Edit Profile
-            </button>
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+            <PageHeader title="Skills Gap" subtitle={career?.name || 'Analyze your skills'} />
+            <div className="glass-card rounded-2xl p-8 text-center mt-8">
+              <p className="text-5xl mb-4">📝</p>
+              <h2 className="text-xl font-bold text-text-primary mb-2">No Skills Listed</h2>
+              <p className="text-text-secondary text-sm mb-6">
+                Add your skills in your profile so we can compare them against your target career.
+              </p>
+              <button
+                onClick={() => router.push('/profile-setup')}
+                className="bg-primary text-white px-6 py-3 rounded-2xl font-semibold hover:bg-primary-dark transition-colors"
+              >
+                Edit Profile
+              </button>
+            </div>
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -126,26 +135,32 @@ export default function SkillsGapPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Skills Gap" subtitle={career?.name || 'Analyze your skills'} />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Skills Gap" subtitle={career?.name || 'Analyze your skills'} />
 
         {/* Match Score */}
-        <div className="glass-card-elevated rounded-2xl p-6 mb-5 text-center">
-          <p className="text-[10px] uppercase tracking-widest text-text-muted mb-2">Skills Match</p>
-          <p
-            className={`text-6xl font-bold ${
-              analysis.matchPercentage >= 70
-                ? 'text-primary'
-                : analysis.matchPercentage >= 40
-                  ? 'text-warning'
-                  : 'text-error'
-            }`}
-          >
-            {analysis.matchPercentage}%
-          </p>
-          <p className="text-sm text-text-secondary mt-2">
-            {analysis.matchedSkills.length} of {analysis.totalRequired} skills matched
-          </p>
+        <div className="glass-card-elevated rounded-2xl p-6 mb-5">
+          <div className="flex items-center justify-center gap-6">
+            <SkillMatchChart matchPercent={analysis.matchPercentage} />
+            <div className="text-center">
+              <p className="text-[10px] uppercase tracking-widest text-text-muted mb-2">Skills Match</p>
+              <p
+                className={`text-5xl font-bold ${
+                  analysis.matchPercentage >= 70
+                    ? 'text-primary'
+                    : analysis.matchPercentage >= 40
+                      ? 'text-warning'
+                      : 'text-error'
+                }`}
+              >
+                {analysis.matchPercentage}%
+              </p>
+              <p className="text-sm text-text-secondary mt-2">
+                {analysis.matchedSkills.length} of {analysis.totalRequired} skills matched
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Matched Skills */}
@@ -239,6 +254,7 @@ export default function SkillsGapPage() {
           </div>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

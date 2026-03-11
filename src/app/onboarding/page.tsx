@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/components/Button';
+import AnimatedPage from '@/components/AnimatedPage';
 
 const slides = [
   { emoji: '🎯', title: 'Discover Your Path', desc: 'Take our career quiz and let AI match you with your ideal career based on your skills and interests.' },
@@ -25,8 +26,9 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex flex-col items-center justify-center px-6">
-      <div className="max-w-md w-full">
+    <AnimatedPage>
+      <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex flex-col items-center justify-center px-6">
+        <div className="max-w-md w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
@@ -72,5 +74,6 @@ export default function OnboardingPage() {
         )}
       </div>
     </div>
+    </AnimatedPage>
   );
 }

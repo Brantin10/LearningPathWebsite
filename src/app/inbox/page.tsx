@@ -16,6 +16,9 @@ import Navbar from '@/components/Navbar';
 import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
 import Avatar from '@/components/Avatar';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import EmptyState from '@/components/EmptyState';
 
 function timeAgo(timestamp: number): string {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
@@ -116,8 +119,9 @@ export default function InboxPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Inbox" subtitle="Messages and contact requests" />
+      <AnimatedPage>
+        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Inbox" subtitle="Messages and contact requests" />
 
         {/* Tab Bar */}
         <div className="flex rounded-xl glass-card p-1 mb-5">
@@ -149,21 +153,15 @@ export default function InboxPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="flex gap-1">
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-            </div>
-          </div>
+          <PageSkeleton />
         ) : tab === 'conversations' ? (
           /* Conversations Tab */
           conversations.length === 0 ? (
-            <Card>
-              <p className="text-text-secondary text-center">
-                No conversations yet. Accept a contact request to start chatting.
-              </p>
-            </Card>
+            <EmptyState
+              icon="💬"
+              title="No Conversations"
+              description="No conversations yet. Accept a contact request to start chatting."
+            />
           ) : (
             <div className="space-y-2">
               {conversations.map((conv) => (
@@ -198,9 +196,9 @@ export default function InboxPage() {
             {/* Incoming Requests */}
             <h3 className="text-sm font-semibold text-text-secondary mb-3">Incoming</h3>
             {incoming.length === 0 ? (
-              <Card className="mb-5">
-                <p className="text-text-muted text-center text-sm">No incoming requests.</p>
-              </Card>
+              <div className="mb-5">
+                <EmptyState icon="📥" title="No Incoming Requests" description="No incoming requests." />
+              </div>
             ) : (
               <div className="space-y-2 mb-5">
                 {incoming.map((req) => (
@@ -252,9 +250,7 @@ export default function InboxPage() {
             {/* Outgoing Requests */}
             <h3 className="text-sm font-semibold text-text-secondary mb-3">Sent</h3>
             {outgoing.length === 0 ? (
-              <Card>
-                <p className="text-text-muted text-center text-sm">No sent requests.</p>
-              </Card>
+              <EmptyState icon="📤" title="No Sent Requests" description="No sent requests." />
             ) : (
               <div className="space-y-2">
                 {outgoing.map((req) => (
@@ -282,6 +278,7 @@ export default function InboxPage() {
           </div>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }

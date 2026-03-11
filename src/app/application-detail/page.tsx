@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
 import { getApplications, updateApplication, deleteApplication } from '@/services/firestore';
 import { JobApplication, ApplicationStatus } from '@/types';
 import Navbar from '@/components/Navbar';
@@ -10,6 +11,9 @@ import PageHeader from '@/components/PageHeader';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import TextArea from '@/components/TextArea';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 const STATUSES: ApplicationStatus[] = ['saved', 'applied', 'phone_screen', 'interview', 'offer', 'rejected'];
 
@@ -17,6 +21,7 @@ function ApplicationDetailContent() {
   const params = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
+  const toast = useToast();
   const appId = params.get('id') || '';
   const [app, setApp] = useState<JobApplication | null>(null);
   const [notes, setNotes] = useState('');
@@ -40,7 +45,7 @@ function ApplicationDetailContent() {
   const handleSaveNotes = async () => {
     if (!user || !app) return;
     await updateApplication(user.uid, app.id, { notes, lastUpdated: Date.now() });
-    alert('Notes saved!');
+    toast.success('Notes saved!');
   };
 
   const handleDelete = async () => {
@@ -49,14 +54,16 @@ function ApplicationDetailContent() {
     router.push('/application-tracker');
   };
 
-  if (loading) return <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated flex items-center justify-center"><div className="flex gap-1"><span className="typing-dot w-3 h-3 rounded-full bg-primary" /><span className="typing-dot w-3 h-3 rounded-full bg-primary" /><span className="typing-dot w-3 h-3 rounded-full bg-primary" /></div></div>;
-  if (!app) return <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated"><Navbar /><main className="max-w-2xl mx-auto px-5 pt-4"><PageHeader title="Application Not Found" /></main></div>;
+  if (loading) return <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated"><PageSkeleton /></div>;
+  if (!app) return <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated"><Navbar /><AnimatedPage><main className="max-w-2xl mx-auto px-5 pt-4"><PageHeader title="Application Not Found" /></main></AnimatedPage></div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title={app.position} subtitle={app.company} />
+      <AnimatedPage>
+        <main className="max-w-2xl mx-auto px-5 pt-4 pb-10">
+          <Breadcrumbs />
+          <PageHeader title={app.position} subtitle={app.company} />
 
         <Card className="mb-4">
           <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3">Status</h3>
@@ -79,6 +86,7 @@ function ApplicationDetailContent() {
         <Button title="Save Notes" onPress={handleSaveNotes} variant="outline" className="w-full mb-4" />
         <button onClick={handleDelete} className="w-full text-center text-error text-sm hover:underline">Delete Application</button>
       </main>
+      </AnimatedPage>
     </div>
   );
 }

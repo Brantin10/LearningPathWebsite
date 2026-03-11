@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useUser } from '@/hooks/useUser';
+import { useToast } from '@/hooks/useToast';
 import {
   getResumeData,
   saveResumeData,
@@ -24,6 +25,9 @@ import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import TextArea from '@/components/TextArea';
+import { PageSkeleton } from '@/components/Skeleton';
+import AnimatedPage from '@/components/AnimatedPage';
+import ScrollReveal from '@/components/ScrollReveal';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -78,6 +82,7 @@ export default function CVPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { profile } = useUser();
+  const toast = useToast();
 
   const [tab, setTab] = useState<'edit' | 'preview'>('edit');
   const [resume, setResume] = useState<ResumeData>({ ...EMPTY_RESUME });
@@ -267,7 +272,7 @@ export default function CVPage() {
     const trimmed = newSkill.trim();
     if (!trimmed) return;
     if (resume.skills.includes(trimmed)) {
-      window.alert('Skill already added.');
+      toast.warning('Skill already added.');
       return;
     }
     setResume((prev) => ({ ...prev, skills: [...prev.skills, trimmed] }));
@@ -288,9 +293,9 @@ export default function CVPage() {
     setSaving(true);
     try {
       await saveResumeData(user.uid, { ...resume, updatedAt: Date.now() });
-      window.alert('Resume saved successfully!');
+      toast.success('Resume saved successfully!');
     } catch (e: any) {
-      window.alert(e.message || 'Failed to save resume.');
+      toast.error(e.message || 'Failed to save resume.');
     } finally {
       setSaving(false);
     }
@@ -353,9 +358,9 @@ export default function CVPage() {
     }
 
     navigator.clipboard.writeText(text.trim()).then(() => {
-      window.alert('Resume copied to clipboard!');
+      toast.info('Resume copied to clipboard!');
     }).catch(() => {
-      window.alert('Failed to copy to clipboard.');
+      toast.error('Failed to copy to clipboard.');
     });
   };
 
@@ -414,7 +419,7 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
         printWindow.print();
       }, 500);
     } else {
-      window.alert('Could not open print window. Please allow popups for this site.');
+      toast.error('Could not open print window. Please allow popups for this site.');
     }
   };
 
@@ -424,15 +429,11 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
     return (
       <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
         <Navbar />
-        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-          <div className="flex justify-center py-20">
-            <div className="flex gap-1">
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-              <span className="typing-dot w-3 h-3 rounded-full bg-primary" />
-            </div>
-          </div>
-        </main>
+        <AnimatedPage>
+          <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+            <PageSkeleton />
+          </main>
+        </AnimatedPage>
       </div>
     );
   }
@@ -447,8 +448,9 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
   return (
     <div className="min-h-screen bg-gradient-to-b from-bg to-bg-elevated">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
-        <PageHeader title="Resume Builder" subtitle="Create and export your professional resume" />
+      <AnimatedPage>
+        <main className="max-w-3xl mx-auto px-5 pt-4 pb-10">
+          <PageHeader title="Resume Builder" subtitle="Create and export your professional resume" />
 
         {/* ── Tab Bar ────────────────────────────────────────── */}
         <div className="flex gap-2 mb-6">
@@ -489,6 +491,7 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
         {tab === 'edit' && (
           <div className="space-y-6">
             {/* ── Contact Info ─────────────────────────────── */}
+            <ScrollReveal>
             <Card>
               <SectionTitle>Contact Information</SectionTitle>
               <Input
@@ -530,9 +533,11 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
                 onChange={(e) => updateContact('portfolio', e.target.value)}
               />
             </Card>
+            </ScrollReveal>
 
             {/* ── Target Career ────────────────────────────── */}
             {resume.targetCareer && (
+              <ScrollReveal delay={0.1}>
               <Card>
                 <SectionTitle>Target Career</SectionTitle>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -546,9 +551,11 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
                   )}
                 </div>
               </Card>
+              </ScrollReveal>
             )}
 
             {/* ── Professional Summary ─────────────────────── */}
+            <ScrollReveal delay={0.2}>
             <Card>
               <SectionTitle>Professional Summary</SectionTitle>
               <TextArea
@@ -558,8 +565,10 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
                 rows={5}
               />
             </Card>
+            </ScrollReveal>
 
             {/* ── Work Experience ──────────────────────────── */}
+            <ScrollReveal delay={0.3}>
             <Card>
               <SectionTitle>Work Experience</SectionTitle>
               {resume.workExperience.length === 0 && (
@@ -693,8 +702,10 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
                 + Add Work Experience
               </button>
             </Card>
+            </ScrollReveal>
 
             {/* ── Education ────────────────────────────────── */}
+            <ScrollReveal delay={0.4}>
             <Card>
               <SectionTitle>Education</SectionTitle>
               {resume.education.length === 0 && (
@@ -798,8 +809,10 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
                 + Add Education
               </button>
             </Card>
+            </ScrollReveal>
 
             {/* ── Skills ───────────────────────────────────── */}
+            <ScrollReveal delay={0.5}>
             <Card>
               <SectionTitle>Skills</SectionTitle>
               <div className="flex flex-wrap gap-2 mb-3">
@@ -839,8 +852,10 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
                 </button>
               </div>
             </Card>
+            </ScrollReveal>
 
             {/* ── Certifications ──────────────────────────── */}
+            <ScrollReveal delay={0.6}>
             <Card>
               <SectionTitle>Certifications</SectionTitle>
               {resume.certifications.length === 0 && (
@@ -928,6 +943,7 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
                 + Add Certification
               </button>
             </Card>
+            </ScrollReveal>
 
             {/* ── Save Button ──────────────────────────────── */}
             <Button
@@ -1083,6 +1099,7 @@ ${certifications.length > 0 ? `<h2>Certifications</h2>${certifications.map((c) =
           </div>
         )}
       </main>
+      </AnimatedPage>
     </div>
   );
 }
