@@ -211,7 +211,7 @@ export default function AIChatPage() {
             /* Welcome State */
             <div className="flex flex-col items-center justify-center py-12">
               <div className="w-16 h-16 rounded-full bg-primary-muted flex items-center justify-center mb-4">
-                <Sparkles size={28} className="text-primary" />
+                <Sparkles size={24} className="text-primary" />
               </div>
               <h2 className="text-xl font-bold text-text-primary mb-2">
                 Hi {username}!

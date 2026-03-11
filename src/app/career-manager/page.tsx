@@ -66,8 +66,9 @@ export default function CareerManagerPage() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              className="h-full"
             >
-              <Card onClick={() => router.push(card.href)} variant="interactive" className="cursor-pointer">
+              <Card onClick={() => router.push(card.href)} variant="interactive" className="cursor-pointer h-full">
                 <div className="text-primary mb-3">{card.icon}</div>
                 <h3 className="text-lg font-semibold text-text-primary">{card.title}</h3>
                 <p className="text-sm text-text-secondary mt-1">{card.desc}</p>

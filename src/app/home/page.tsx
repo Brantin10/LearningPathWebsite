@@ -25,7 +25,7 @@ function ActionCard({ title, description, icon, onPress }: ActionCardProps) {
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className="glass-card-interactive cursor-pointer rounded-2xl p-4 text-left min-h-[120px] flex flex-col justify-between group"
+      className="glass-card-interactive cursor-pointer rounded-2xl p-4 text-left min-h-[120px] h-full flex flex-col justify-between group"
     >
       <div>
         <div className="text-primary mb-2">{icon}</div>

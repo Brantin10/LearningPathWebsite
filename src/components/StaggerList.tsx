@@ -37,7 +37,7 @@ export default function StaggerList({ children, className = '', staggerDelay = 0
 
 export function StaggerItem({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <motion.div variants={staggerItem} className={className}>
+    <motion.div variants={staggerItem} className={`h-full ${className}`}>
       {children}
     </motion.div>
   );
